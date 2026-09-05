@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Advanced To-Do List Application with Local Storage">
+    <meta name="theme-color" content="#6366f1">
+    <title>📝 Pro To-Do List - Task Management</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1 class="logo">📝 Pro To-Do</h1>
+                    <p class="tagline">Smart Task Management</p>
+                </div>
+                <div class="header-right">
+                    <button class="btn-theme" id="themeToggle" title="Toggle Dark/Light Mode">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+                    <button class="btn-settings" id="settingsBtn" title="Settings">⚙️</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- NAVIGATION TABS -->
+        <nav class="nav-tabs">
+            <button class="nav-tab active" data-tab="tasks">📋 Tasks</button>
+            <button class="nav-tab" data-tab="categories">🏷️ Categories</button>
+            <button class="nav-tab" data-tab="analytics">📊 Analytics</button>
+            <button class="nav-tab" data-tab="settings">⚙️ Settings</button>
+        </nav>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <!-- TASKS TAB -->
+            <section id="tasks" class="tab-content active">
+                <div class="tasks-container">
+                    <!-- INPUT SECTION -->
+                    <div class="input-section card">
+                        <div class="input-header">
+                            <h2>Add New Task</h2>
+                            <button class="btn-secondary" id="quickAddBtn" title="Quick Add">+</button>
+                        </div>
+
+                        <div class="input-group">
+                            <input 
+                                type="text" 
+                                id="taskInput" 
+                                class="input-field" 
+                                placeholder="What's on your mind?"
+                                autocomplete="off"
+                            >
+                            <button class="btn-primary" id="addTaskBtn">Add Task</button>
+                        </div>
+
+                        <div class="input-options">
+                            <div class="option-group">
+                                <label>Category:</label>
+                                <select id="categorySelect" class="select-field">
+                                    <option value="general">General</option>
+                                </select>
+                            </div>
+
+                            <div class="option-group">
+                                <label>Priority:</label>
+                                <select id="prioritySelect" class="select-field">
+                                    <option value="low">Low</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+
+                            <div class="option-group">
+                                <label>Due Date:</label>
+                                <input type="date" id="dueDateInput" class="input-field">
+                            </div>
+
+                            <div class="option-group">
+                                <label>Recurring:</label>
+                                <select id="recurringSelect" class="select-field">
+                                    <option value="none">None</option>
+                                    <option value="daily">Daily</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FILTER SECTION -->
+                    <div class="filter-section card">
+                        <h3>Filters & View</h3>
+                        <div class="filter-controls">
+                            <div class="search-box">
+                                <input 
+                                    type="text" 
+                                    id="searchInput" 
+                                    class="input-field" 
+                                    placeholder="Search tasks..."
+                                >
+                                <span class="search-icon">🔍</span>
+                            </div>
+
+                            <div class="filter-buttons">
+                                <button class="filter-btn active" data-filter="all">All</button>
+                                <button class="filter-btn" data-filter="active">Active</button>
+                                <button class="filter-btn" data-filter="completed">Completed</button>
+                                <button class="filter-btn" data-filter="overdue">Overdue</button>
+                            </div>
+
+                            <div class="sort-controls">
+                                <label>Sort by:</label>
+                                <select id="sortSelect" class="select-field">
+                                    <option value="created">Created Date</option>
+                                    <option value="dueDate">Due Date</option>
+                                    <option value="priority">Priority</option>
+                                    <option value="category">Category</option>
+                                    <option value="name">Task Name</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STATS SECTION -->
+                    <div class="stats-section">
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalTasks">0</div>
+                            <div class="stat-label">Total Tasks</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="activeTasks">0</div>
+                            <div class="stat-label">Active</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="completedTasks">0</div>
+                            <div class="stat-label">Completed</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="overdueTasks">0</div>
+                            <div class="stat-label">Overdue</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="completionRate">0%</div>
+                            <div class="stat-label">Completion</div>
+                        </div>
+                    </div>
+
+                    <!-- TASKS LIST -->
+                    <div class="tasks-list-section card">
+                        <h3 id="listTitle">All Tasks</h3>
+                        <div class="tasks-list" id="tasksList">
+                            <div class="empty-state">
+                                <p>✨ No tasks yet. Add one to get started!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CATEGORIES TAB -->
+            <section id="categories" class="tab-content">
+                <div class="categories-container">
+                    <div class="card">
+                        <h2>Manage Categories</h2>
+                        <div class="category-input">
+                            <input 
+                                type="text" 
+                                id="categoryInput" 
+                                class="input-field" 
+                                placeholder="Enter category name..."
+                            >
+                            <input 
+                                type="color" 
+                                id="categoryColor" 
+                                class="color-picker" 
+                                value="#6366f1"
+                            >
+                            <button class="btn-primary" id="addCategoryBtn">Add Category</button>
+                        </div>
+                    </div>
+
+                    <div class="categories-grid" id="categoriesList">
+                        <!-- Categories will be rendered here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- ANALYTICS TAB -->
+            <section id="analytics" class="tab-content">
+                <div class="analytics-container">
+                    <!-- OVERVIEW CARDS -->
+                    <div class="analytics-grid">
+                        <div class="card">
+                            <h3>📈 Productivity Overview</h3>
+                            <div class="metric">
+                                <span>Tasks Completed Today:</span>
+                                <span class="metric-value" id="completedToday">0</span>
+                            </div>
+                            <div class="metric">
+                                <span>This Week:</span>
+                                <span class="metric-value" id="completedWeek">0</span>
+                            </div>
+                            <div class="metric">
+                                <span>This Month:</span>
+                                <span class="metric-value" id="completedMonth">0</span>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3>⏱️ Time Tracking</h3>
+                            <div class="metric">
+                                <span>Average Tasks/Day:</span>
+                                <span class="metric-value" id="avgTasksPerDay">0</span>
+                            </div>
+                            <div class="metric">
+                                <span>Completion Rate:</span>
+                                <span class="metric-value" id="analyticsCompletionRate">0%</span>
+                            </div>
+                            <div class="metric">
+                                <span>Overdue Tasks:</span>
+                                <span class="metric-value" id="analyticsOverdue">0</span>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3>🎯 Priority Distribution</h3>
+                            <div class="metric">
+                                <span>High Priority:</span>
+                                <span class="metric-value" id="highPriorityCount">0</span>
+                            </div>
+                            <div class="metric">
+                                <span>Medium Priority:</span>
+                                <span class="metric-value" id="mediumPriorityCount">0</span>
+                            </div>
+                            <div class="metric">
+                                <span>Low Priority:</span>
+                                <span class="metric-value" id="lowPriorityCount">0</span>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3>📊 Category Stats</h3>
+                            <div id="categoriesStats" class="categories-stats">
+                                <!-- Category stats will be rendered here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CHARTS -->
+                    <div class="card">
+                        <h3>📈 Completion Trend</h3>
+                        <div class="chart-container">
+                            <div class="mini-chart" id="completionChart">
+                                <!-- Chart will be rendered here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- INSIGHTS -->
+                    <div class="card">
+                        <h3>💡 Insights</h3>
+                        <div id="insightsList" class="insights-list">
+                            <!-- Insights will be rendered here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SETTINGS TAB -->
+            <section id="settings" class="tab-content">
+                <div class="settings-container">
+                    <!-- APPEARANCE -->
+                    <div class="card">
+                        <h2>🎨 Appearance</h2>
+                        <div class="setting-group">
+                            <label>
+                                <input type="checkbox" id="darkModeToggle" class="checkbox">
+                                <span>Dark Mode</span>
+                            </label>
+                            <p class="setting-description">Enable dark theme for comfortable viewing</p>
+                        </div>
+                        <div class="setting-group">
+                            <label>
+                                <input type="checkbox" id="compactViewToggle" class="checkbox">
+                                <span>Compact View</span>
+                            </label>
+                            <p class="setting-description">Show minimal task details</p>
+                        </div>
+                    </div>
+
+                    <!-- NOTIFICATIONS -->
+                    <div class="card">
+                        <h2>🔔 Notifications</h2>
+                        <div class="setting-group">
+                            <label>
+                                <input type="checkbox" id="enableNotifications" class="checkbox" checked>
+                                <span>Enable Notifications</span>
+                            </label>
+                        </div>
+                        <div class="setting-group">
+                            <label>
+                                <input type="checkbox" id="dueReminderToggle" class="checkbox" checked>
+                                <span>Due Date Reminders</span>
+                            </label>
+                            <p class="setting-description">Get notified about upcoming due dates</p>
+                        </div>
+                        <div class="setting-group">
+                            <label>
+                                <input type="checkbox" id="recurringReminderToggle" class="checkbox" checked>
+                                <span>Recurring Task Reminders</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- DATA MANAGEMENT -->
+                    <div class="card">
+                        <h2>💾 Data Management</h2>
+                        <div class="data-stats">
+                            <p>Local Storage Used: <strong id="storageUsed">0 KB</strong></p>
+                            <p>Total Tasks Stored: <strong id="storedTasksCount">0</strong></p>
+                            <p>Last Synced: <strong id="lastSynced">Never</strong></p>
+                        </div>
+                        <div class="button-group">
+                            <button class="btn-secondary" id="exportBtn">📥 Export Data</button>
+                            <button class="btn-secondary" id="importBtn">📤 Import Data</button>
+                            <button class="btn-danger" id="clearBtn">🗑️ Clear All Data</button>
+                        </div>
+                        <input type="file" id="importFile" style="display: none;" accept=".json">
+                    </div>
+
+                    <!-- ABOUT -->
+                    <div class="card">
+                        <h2>ℹ️ About</h2>
+                        <div class="about-info">
+                            <p><strong>Pro To-Do List v1.0.0</strong></p>
+                            <p>Advanced task management application with local storage persistence</p>
+                            <p><strong>Features:</strong> Task management, Categories, Priority levels, Due dates, Recurring tasks, Analytics, Dark mode</p>
+                            <p><strong>License:</strong> MIT | <strong>Privacy:</strong> All data stored locally</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- FLOATING ACTION BUTTON -->
+        <button class="fab" id="fab" title="Quick Add Task">+</button>
+
+        <!-- MODALS -->
+        <!-- TASK DETAIL MODAL -->
+        <div class="modal" id="taskModal">
+            <div class="modal-content">
+                <button class="modal-close" id="closeTaskModal">&times;</button>
+                <h2>Task Details</h2>
+                <div class="task-detail-form">
+                    <div class="form-group">
+                        <label>Task Name:</label>
+                        <input type="text" id="editTaskName" class="input-field">
+                    </div>
+                    <div class="form-group">
+                        <label>Description:</label>
+                        <textarea id="editTaskDesc" class="textarea-field" rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Category:</label>
+                        <select id="editTaskCategory" class="select-field"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Priority:</label>
+                        <select id="editTaskPriority" class="select-field">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Due Date:</label>
+                        <input type="date" id="editTaskDueDate" class="input-field">
+                    </div>
+                    <div class="form-group">
+                        <label>Recurring:</label>
+                        <select id="editTaskRecurring" class="select-field">
+                            <option value="none">None</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-primary" id="saveTaskBtn">Save Changes</button>
+                        <button class="btn-danger" id="deleteTaskBtn">Delete Task</button>
+                        <button class="btn-secondary" id="cancelTaskBtn">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SETTINGS MODAL -->
+        <div class="modal" id="settingsModal">
+            <div class="modal-content">
+                <button class="modal-close" id="closeSettingsModal">&times;</button>
+                <h2>Quick Settings</h2>
+                <div class="quick-settings">
+                    <label class="setting-checkbox">
+                        <input type="checkbox" id="quickDarkMode" class="checkbox">
+                        <span>Dark Mode</span>
+                    </label>
+                    <label class="setting-checkbox">
+                        <input type="checkbox" id="quickNotifications" class="checkbox" checked>
+                        <span>Notifications</span>
+                    </label>
+                    <button class="btn-secondary" onclick="location.href='#settings'; document.querySelector('[data-tab=settings]').click();">Go to Full Settings</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- NOTIFICATION TOAST -->
+        <div class="toast" id="toast"></div>
+    </div>
+
+    <script src="utils.js"></script>
+    <script src="storage.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
